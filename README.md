@@ -3,6 +3,7 @@ Bachelor thesis code
 
 # Controller BLDC fără senzori utilizând BEMF și detecția trecerii prin zero (ZCP)
 
+# Hardware: https://github.com/vladBaciu/-HW_2019_KiNonPCB-Sensorless-BLDC
 
 Lucrarea de față își propune controlul unui motor BLDC (brushless DC motor) având ca feedback tensiunea electromotoare inversa (BEMF) a bobinei nealimentate. Pentru atingerea scopului au fost simulate, testate și implementate anumite topologii hardware. Partea software a fost dezvoltată pe o ahitectură ARM Cortex M4, iar codul respectă specificațiile standardului AUTOSAR (AUTomotive Open System ARchitecture) folosit în industria automotive.
 
