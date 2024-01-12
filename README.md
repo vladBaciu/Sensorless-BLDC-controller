@@ -1,136 +1,119 @@
-Bachelor thesis code
+# Bachelor thesis project
 
+# Video: [youtube demonstration for starting](https://www.youtube.com/watch?v=OzBrSzkHfI8&ab_channel=Ataraxy)
 
-# Controller BLDC fără senzori utilizând BEMF și detecția trecerii prin zero (ZCP)
+# Sensorless BLDC Controller using BEMF and Zero Crossing Point (ZCP) Detection
 
 # Hardware: https://github.com/vladBaciu/-HW_2019_KiNonPCB-Sensorless-BLDC
 
-Lucrarea de față își propune controlul unui motor BLDC (brushless DC motor) având ca feedback tensiunea electromotoare inversa (BEMF) a bobinei nealimentate. Pentru atingerea scopului au fost simulate, testate și implementate anumite topologii hardware. Partea software a fost dezvoltată pe o ahitectură ARM Cortex M4, iar codul respectă specificațiile standardului AUTOSAR (AUTomotive Open System ARchitecture) folosit în industria automotive.
+This work aims to control a BLDC (brushless DC motor) using the back-electromotive force (BEMF) of the unpowered coil as feedback. To achieve this goal, specific hardware topologies were simulated, tested, and implemented. The software part was developed on an ARM Cortex M4 architecture, and the code complies with the AUTOSAR (AUTomotive Open System ARchitecture) standard used in the automotive industry.
 
+# 1. Introduction
 
-# 1. Introducere
+This work focuses on designing an embedded system for sensorless control of a BLDC motor using the BEMF (back-electromotive force) method. Since sensorless control is typically used in applications with a fixed motor load in the industry, this work tests the behavior of a 36V, 300W motor under various loads and low-speed operation.
 
-Această lucrare are ca scop conceperea unui sistem embedded pentru controlul nesenzorizat al unui motor BLDC utilizând metoda BEMF (back-electromotive force). Deoarece în industrie controlul nesenzorizat este folosit doar în aplicațiile unde sarcina motorului este fixă, prin această lucrare se testează comportamentul unui motor de 36V, 300W la diverse sarcini și funcționarea la viteze mici.
-
-
-În general, pentru controlul motoarelor BLDC se folosește comutarea în șase pași. Fiecare fază conduce pentru 120°, iar la un moment dat doar două faze sunt acționate. Acest lucru face posibilă detecția BEMF (back electromotive force) pe cea de a treia fază neacționată, însă pentru detecția punctului de trecere prin zero este necesar accesul la nodul virtual al motorului, nod ce constituie referința semnalului BEMF. Deoarece nodul virtual nu este accesibil acesta se realizează cu ajutorul unei unei rețele de rezistențe. În Fig.1. este prezentat modul de construcție al nodului virtual și detecția punctului de trecere prin zero a BEMF
-
+Generally, BLDC motor control employs six-step commutation. Each phase conducts for 120°, and at any given time, only two phases are active. This allows the detection of BEMF on the third inactive phase, but for zero-crossing point detection, access to the virtual node of the motor is required, serving as the reference for the BEMF signal. As the virtual node is not directly accessible, it is created using a network of resistors. Figure 1 shows the construction of the virtual node and the zero-crossing point detection of BEMF.
 
 ![image](https://user-images.githubusercontent.com/24388880/153602152-070da2fc-dd5c-455d-8a6a-2e212eee148e.png)
 
-<b> *Fig. 1 Implementarea nodului virtual si detecția trecerii prin zero a BEMF* </b>
+**Fig. 1 Implementation of the virtual node and zero-crossing point detection of BEMF**
 
-Din relația de mai jos se poate observa că amplitudinea BEMF este proporțională cu viteza rotorului, asta înseamnă că pentru controlul motorului există o limită inferioară a vitezei rotorului sub care detecția BEMF nu ar mai fi posibilă.
+From the relation below, it can be observed that the BEMF amplitude is proportional to the rotor speed, implying a lower speed limit for BEMF detection in motor control.
 
-<b> V<sub>BEMF</sub> = B * L * v </b>
+**V<sub>BEMF</sub> = B * L * v**
 
-
-Deoarece la pornire amplitudinea BEMF este mica, iar circuitul de detecție nu poate semnaliza trecerea prin zero, s-a determinat experimental secvența optimă de pornire. Această secvență a fost implementată în software folosind un look-up table ce este citit cu ajutorul întreruperilor software. Deoarece în momentul pornirii poziția rotorului este necunoscută, a fost implementată o rutină software pentru punerea rotorului într-o poziție predefinită față de stator.
-
+Since the BEMF amplitude is low during startup, and the detection circuit cannot signal the zero-crossing point, an experimental startup sequence was determined. This sequence was implemented in software using a lookup table read with the help of software interrupts. As the rotor position is unknown during startup, a software routine was implemented to position the rotor at a predefined position relative to the stator.
 
 ![image](https://user-images.githubusercontent.com/24388880/153603005-ef8fe3c8-750e-42d6-a287-8a6d75c07936.png)
 
-<b> *Fig. 2a Modelare Simulink pentru controlul nesenzorizat* </b>
+**Fig. 2a Simulink Modeling for Sensorless Control**
 
-Pentru controlul motorului s-a ales proiectarea unui invertor realizat cu șașe tranzistori MOSFET de tip N. Pentru comanda tranzistorilor din partea de sus a invertorului s-au folosit drivere de comandă cu capacitoare de boostrap IR2101. Deși o implementare mult mai ușoară era folosirea tranzistorilor MOSFET de tip P, rezistența acestora în conducție este mai mare decât cea a tranzistorilor de tip N datorită tipului de purtători majoritari din regiunea de tip p.
-
+For motor control, an inverter was designed using six N-type MOSFET transistors. Bootstrap IR2101 command drivers with bootstrap capacitors were used to command the upper transistors of the inverter. Although using P-type MOSFET transistors would be an easier implementation, their on-state resistance is higher than that of N-type transistors due to the majority carrier type in the P-region.
 
 ![image](https://user-images.githubusercontent.com/24388880/153603072-65890214-c291-4284-84a8-d4f80b8e6f94.png)
 
-<b> *Fig. 2b Tensiunea BEMF și punctul de trecere prin zero de pe fiecare fază. Simulare Simulink* </b>
-
+**Fig. 2b BEMF Voltage and Zero-Crossing Point on each phase. Simulink Simulation**
 
 ![image](https://user-images.githubusercontent.com/24388880/153603184-962c2906-b3e2-43b8-b40d-ecfc5195c557.png)
 
-<b> *Fig. 3 Arhitectura software bazată pe standardul AUTOSAR* </b>
+**Fig. 3 AUTOSAR Standard-based Software Architecture**
 
-# 3. Rezultate
+# 3. Results
 
-În prezent, sistemul poate controla nesenzorizat un motor de hoverboard de 36V și 350W evidențiat în Figura 14 folosind detecția BEMF. Modulele electronice au fost proiectate în KiCad și imprimate folosind metoda de transfer de toner pentru a fixa imaginea cablajului pe laminatul de cupru. Vizualizarea semnalelor și depanarea s-a realizat cu ajutorul osciloscopului Hantek6022BE utilizat împreună cu limbajul de programare LabView unde s-a reazlizat un driver software ce apelează funcțiile dintr-un fișier DLL (Dynamic-link library) puse la dispoziție de producător.
-
+Currently, the system can sensorlessly control a 36V, 350W hoverboard motor using BEMF detection, as highlighted in Figure 14. The electronic modules were designed in KiCad and printed using the toner transfer method to fix the circuit image on the copper laminate. Signal visualization and debugging were done using the Hantek6022BE oscilloscope together with LabView programming language, where a software driver was developed calling functions from a DLL (Dynamic-link library) provided by the manufacturer.
 
 ![image](https://user-images.githubusercontent.com/24388880/153603255-8e72aeb5-21f0-4b49-8d7d-e7eb49b3b4a1.png)
 
-<b> *Fig. 4 Ansamblu experimental* </b>
+**Fig. 4 Experimental Assembly**
 
-În ceea ce privește detecția punctului de trecere prin zero a semnalului BEMF au fost implementate filtre analogice pentru filtrarea semnalului PWM de 20 kHz.
+Regarding the zero-crossing point detection of the BEMF signal, analog filters were implemented to filter the 20 kHz PWM signal.
 
-Pentru corectitudinea detecției s-au comparat ieșirile senzorilor Hall cu ieșirile comparatoarelor, iar semnalele au un defazaj de 30°.
-
+To ensure detection accuracy, Hall sensor outputs were compared with comparator outputs, and the signals had a 30° phase shift.
 
 ![image](https://user-images.githubusercontent.com/24388880/153603467-2fdb3206-2092-4eba-92e2-1f12034b9835.png)
 
-<b> *Fig. 5 Ieșirea Hall și ieșirea comparatorului pentru faza B* </b>
+**Fig. 5 Hall Output and Comparator Output for Phase B**
 
-Prin încercări experimentale s-a determinat un tabel pe baza căruia sunt acționate cele trei faze.
+Through experimental trials, a table was determined based on which the three phases are actuated.
 
-<b> *Tab. 1 Secvențele de comutare în funcție de ieșirile comparatoarelor* </b>
+**Tab. 1 Switching Sequences Based on Comparator Outputs**
 
 ![image](https://user-images.githubusercontent.com/24388880/153603622-c824940b-3502-430e-b446-816e3bc04158.png)
 
-În Figura 5 este evidențiată tensiunea pe faza A în raport cu nodul virtual realizat prin rețeaua de rezistențe. Acest semnal este numit în literatura de specialitate drept a treia armonică a semnalului BEMF și poate fi utilizat pentru detecția punctului de trecere prin zero a tensiunii electromotoare inverse. Aceste metode sunt numite metode indirecte de detecție a punctului de trecere prin zero și sunt folosite în industrie pentru controlul motoarelor la viteze reduse (RPM mic). Printre metodele indirecte se mai întânlesc metoda integrării BEMF, integrarea armonicii a treia a semnalului BEMF, măsurarea curentului fazelor și metoda ce utilizează diodele parazite (Free-Wheeling Diode) pentru detecția ZCP (zero crossing point).
-
+In Figure 5, the voltage on phase A with the virtual node as a reference is highlighted. This signal is known in the literature as the third harmonic of the BEMF signal and can be used for zero-crossing point detection of the inverse electromotive force voltage. These methods are called indirect methods of zero-crossing point detection and are used in the industry for low-speed (RPM) motor control. Among the indirect methods are the BEMF integration method, the third harmonic integration method, phase current measurement, and the method using parasitic diodes (Free-Wheeling Diode) for ZCP (zero crossing point) detection.
 
 ![image](https://user-images.githubusercontent.com/24388880/153603802-7dbf2648-b808-4ee6-ae4e-e6149e4860f8.png)
 
- <b> *Fig.5 Tensiunea pe o fază avand ca referință nodul virtual* </b>
+**Fig. 5 Voltage on a Phase with the Virtual Node as a Reference**
 
-În Figura 6 se poate observa ca după filtrare tensiunea electromotoare inversă este asimetrică ceea ce duce la un dezechilibru în detecția ZCP. Acest lucru se datorează tipului de motor ales, acesta fiind tratat ca un sistem necunoscut deoarece nu s-au găsit informații de catalog de la producător. Dezechilibrul ZCP duce la un componament instabil al sistemului. Lucrarea "Unbalanced ZCP Compensation Method For Position Sensorless BLDC Motor" publicată în revista IEEE Transactions on Power Electronics, volumul 34, numărul 4 din aprilie 2019 propune o metodă de eliminare a acestui inconvenient. În Figura 74 a fost măsurată tensiunea electromotoare inversă pe un motor de 12V, punctul de trecere prin zero fiind simetric și la o distanță de 30° de grade de la ultima comutare.
+In Figure 6, after filtering, the reverse electromotive force voltage is asymmetric, leading to an imbalance in ZCP detection. This is due to the chosen motor type, treated as an unknown system due to the lack of catalog information from the manufacturer. ZCP imbalance results in an unstable system component. The paper "Unbalanced ZCP Compensation Method For Position Sensorless BLDC Motor," published in the IEEE Transactions on Power Electronics, Volume 34, Number 4, April 2019, proposes a method to eliminate this drawback. In Figure 7, the reverse electromotive force voltage on a 12V motor was measured, and the zero-crossing point is symmetric and 30° away from the last commutation.
 
 ![image](https://user-images.githubusercontent.com/24388880/153603960-ef6a4552-d4cc-4521-a38f-7d00db4db879.png)
 
-
-<b> *Fig. 6 Detecția punctului de trecere prin zero* </b>
+**Fig. 6 Zero-Crossing Point Detection**
 
 ![image](https://user-images.githubusercontent.com/24388880/153604105-ef760424-524d-4070-a8c4-63920c0fcdb9.png)
 
-
-<b> *Fig. 7 Detecția punctului de trecere prin zero. Semnal filtrat* </b>
-
+**Fig. 7 Zero-Crossing Point Detection. Filtered Signal**
 
 ![image](https://user-images.githubusercontent.com/24388880/153604166-9da9df7e-9dde-43fd-a476-22e474416112.png)
 
+**Fig. 8 Balanced BEMF. Unfiltered Signal. Yellow – Phase A, Green – Phase B**
 
-<b> *Fig. 8 BEMF echilibrat. Semnal nefiltrat. Galben – Faza A, Verde – Faza B* </b>
-
-În Figura 9 este este evidențiată detecția punctului de trecere prin zero atunci cand factorul de umplere al semnalului PWM crește.
-
+In Figure 9, zero-crossing point detection is highlighted as the PWM signal duty cycle increases during acceleration, and the BEMF is unfiltered.
 
 ![image](https://user-images.githubusercontent.com/24388880/153604291-57538fc2-75d9-4f16-a323-4be021ee4e14.png)
 
-<b> *Fig. 9 Detecția punctului de trecere prin zero în timpul accelerării. BEMF nefiltrat* </b>
+**Fig. 9 Zero-Crossing Point Detection During Acceleration. Unfiltered BEMF**
 
-În Figura 10 este evidențiată tensiunea nodului virtual, cunoscut drept nod de referință. După cum se poate vedea tensiunea de referință ce se găsește la intrarea inversoare a comparatoarelor nu este una constantă.
-
+In Figure 10, the voltage of the virtual node, known as the reference node, is highlighted. As can be seen, the reference voltage at the inverter's input is not constant.
 
 ![image](https://user-images.githubusercontent.com/24388880/153604401-13f75a84-936f-4718-a3f1-7776164aff5c.png)
 
-<b> *Fig. 10 Tensiunea BEMF și nodul virtual. Galben – BEMF, Verde – Nod virtual* </b>
+**Fig. 10 BEMF Voltage and Virtual Node. Yellow – BEMF, Green – Virtual Node**
 
-Pe lângă partea experimentală și educațională, proiectul și-a propus crearea unui ESC ce respectă standardele din industrie și poate fi comercializa la scară largă. În Figura 11 este prezentat modulul electronic în tehnologie SMD (surface-mounted device).
+In addition to the experimental and educational aspects, the project aimed to create an ESC (Electronic Speed Controller) that adheres to industry standards and can be widely commercialized. Figure 11 presents the electronic module in SMD (surface-mounted device) technology.
 
 ![image](https://user-images.githubusercontent.com/24388880/153604481-4e73504c-ae69-445f-b3ba-b4d65bc7333e.png)
 
+**Fig. 11 Physically Realized Module for Commercialization**
 
-<b> *Fig. 11 Modul fizic realizat pentru comercializare* </b>
-
-Pentru protecția modulului s-a realizat o carcasă 3D transformând fișierele 3D din KiCad în format step pentru a exporta dimensiunile modulului electronic. În Figura 11 și Figura 12 este prezentat modelul 3D realizat în FreeCad.
+For module protection, a 3D case was designed by transforming the 3D files from KiCad into STEP format to export the dimensions of the electronic module. Figures 11 and 12 show the 3D model created in FreeCad.
 
 ![image](https://user-images.githubusercontent.com/24388880/153604605-8c82ea52-e4ac-4589-9d25-3ae0a3b21fc3.png)
 
-
-<b> *Fig. 12 Proiectare carcasă în FreeCad* </b>
-
+**Fig. 12 Case Design in FreeCad**
 
 ![image](https://user-images.githubusercontent.com/24388880/153604698-e45bb6a8-c942-4c1b-9360-761db2c0397a.png)
 
-<b> *Fig. 13 Carcasă printată 3D* </b>
+**Fig. 13 3D Printed Case**
 
-# 4. Concluzii
+# 4. Conclusions
 
-Deoarece motoarele BLDC iau locul motoarelor cu perii, controlul nesenzorizat este de mare interes pentru dezvoltatorii de aplicații din domeniul automobilelor, aerospațial și HVAC (heating, ventilation and air conditioning). Eliminarea senzorilor scade costul de producție al motorului și dimensiunile lui. Putem spune că implementarea proiectului este de interes pentru companiile din domeniu și constituie un domeniu de cercetare în continuă dezvoltare. Proiectul și-a propus proiectarea și realizarea modulelor electronice în conformitate cu cerințele din industrie. De asemenea, partea software este în conformitate cu cerințele din industria automotive și respectă specificațiile AUTOSAR.
+As BLDC motors replace brushed motors, sensorless control is of great interest to developers in the automotive, aerospace, and HVAC (heating, ventilation, and air conditioning) fields. Sensor elimination reduces motor production costs and dimensions. The implementation of the project is of interest to companies in the field and constitutes a continuously evolving research area. The project aimed to
 
-# Bibliografie
+
+# References
 
 Microelctronics, S. T. (2007). Sensorless bldc motor control and bemf sampling methods with st7mc. AN1946 Application Note, 3-5.
 Gamazo-Real, J. C., Vázquez-Sánchez, E., & Gómez-Gil, J. (2010). Position and speed control of brushless DC motors using sensorless techniques and application trends. Sensors, 10(7), 6901-6947.
