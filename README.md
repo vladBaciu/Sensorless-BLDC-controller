@@ -110,8 +110,7 @@ For module protection, a 3D case was designed by transforming the 3D files from 
 
 # 4. Conclusions
 
-As BLDC motors replace brushed motors, sensorless control is of great interest to developers in the automotive, aerospace, and HVAC (heating, ventilation, and air conditioning) fields. Sensor elimination reduces motor production costs and dimensions. The implementation of the project is of interest to companies in the field and constitutes a continuously evolving research area. The project aimed to
-
+As BLDC motors replace brushed motors, sensorless control is of great interest to developers in the automotive, aerospace, and HVAC (heating, ventilation, and air conditioning) fields. Sensor elimination reduces motor production costs and dimensions.
 
 # References
 
