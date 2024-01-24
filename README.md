@@ -1,10 +1,10 @@
 # Bachelor thesis project
 
-# Video: [youtube demonstration for motor starting](https://www.youtube.com/watch?v=OzBrSzkHfI8&ab_channel=Ataraxy)
+### Video: [youtube demonstration for motor starting](https://www.youtube.com/watch?v=OzBrSzkHfI8&ab_channel=Ataraxy)
 
-# Sensorless BLDC Controller using BEMF and Zero Crossing Point (ZCP) Detection
+### Sensorless BLDC Controller using BEMF and Zero Crossing Point (ZCP) Detection
 
-# Hardware: https://github.com/vladBaciu/-HW_2019_KiNonPCB-Sensorless-BLDC
+### Hardware: https://github.com/vladBaciu/-HW_2019_KiNonPCB-Sensorless-BLDC
 
 This work aims to control a BLDC (brushless DC motor) using the back-electromotive force (BEMF) of the unpowered coil as feedback. To achieve this goal, specific hardware topologies were simulated, tested, and implemented. The software part was developed on an ARM Cortex M4 architecture, and the code complies with the AUTOSAR (AUTomotive Open System ARchitecture) standard used in the automotive industry.
 
